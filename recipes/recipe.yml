@@ -29,7 +29,6 @@ modules:
     repos:
       files:
         - https://terra.fyralabs.com/terra.repo
-      copr:
     install:
       packages:
         - ghostty
