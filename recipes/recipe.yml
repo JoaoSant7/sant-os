@@ -6,25 +6,35 @@ name: sant-os
 description: This is my personal OS image.
 
 # the base image to build on top of (FROM) and the version tag to use
-base-image: ghcr.io/ublue-os/silverblue-main
-image-version: 42 # latest is also supported if you want new updates ASAP
+base-image: quay.io/fedora-ostree-desktops/base-atomic
+image-version: 44 # latest is also supported if you want new updates ASAP
 
 # module configuration, executed in order
 # you can include multiple instances of the same module
 modules:
+  - from-file: common/sddm-modules.yml
+  - from-file: common/common-modules.yml
+  - from-file: common/nvidia-open-modules.yml
+  - from-file: common/hyprland-modules.yml
+  - from-file: common/xdg-desktop-portal-modules.yml
+  - from-file: common/final-modules.yml
+
   - type: files
     files:
       - source: system
-        destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
+        destination: / # copies files/system/* (* means everything inside it) into your image's root folder /boot/
+
 
   - type: dnf
     repos:
+      files:
+        - https://terra.fyralabs.com/terra.repo
       copr:
-        - atim/starship
     install:
       packages:
-        - micro
-        - starship
+        - ghostty
+        - noctalia-shell
+        - zsh
     remove:
       packages:
         # example: removing firefox (in favor of the flatpak)
@@ -38,8 +48,8 @@ modules:
         scope: system
         # If no repo information is specified, Flathub will be used by default
         install: # system flatpaks we want all users to have and not remove
-          - org.mozilla.firefox
           - org.gnome.Loupe
+          - com.obsproject.Studio
       - scope: user # Also add Flathub user repo, but no user packages
 
   - type: signing # this sets up the proper policy & signing files for signed images to work fully
